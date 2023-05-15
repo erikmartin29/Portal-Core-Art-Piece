@@ -9,7 +9,7 @@ var loader = new THREE.TextureLoader();
 const scene = new THREE.Scene()
 
 // Outer Sphere
-const outerSphereGeometry = new THREE.SphereGeometry(3.5,32,32)
+const outerSphereGeometry = new THREE.SphereGeometry(3.25,32,32)
 const outerSphereMaterial = new THREE.ShaderMaterial({
   wireframe: true,
   vertexShader: `
@@ -56,16 +56,31 @@ const innerSphereMaterial = new THREE.ShaderMaterial({
 const innerSphereMesh = new THREE.Mesh(innerSphereGeometry, innerSphereMaterial)
 scene.add(innerSphereMesh)
 
-
-var spiralMaterial = new THREE.MeshLambertMaterial({
+// Spiral 
+var spiralMaterial = new THREE.MeshBasicMaterial({
   map: loader.load('assets/swirl.png'),
   transparent: true
 });
-var spiralGeometry = new THREE.PlaneGeometry(3.5, 3.5);
+var spiralGeometry = new THREE.CircleGeometry(1.75, 32);
 var spiralMesh = new THREE.Mesh(spiralGeometry, spiralMaterial);
-// set the position of the image mesh in the x,y,z dimensions
-spiralMesh.position.set(0,0,3.5);
+spiralMesh.position.set(0,0,3.51);
 scene.add(spiralMesh);
+
+//Outer Cone
+const outerConeGeometry = new THREE.ConeGeometry(3.5/2 - 0.05, 3.5/2, 32); 
+const outerConeMaterial = new THREE.MeshBasicMaterial( {color: 0xffffff, wireframe:true} );
+const outerConeMesh = new THREE.Mesh(outerConeGeometry, outerConeMaterial ); 
+outerConeMesh.translateZ(2.59);
+outerConeMesh.rotateX(-1.55);
+scene.add(outerConeMesh);
+
+//Inner Cone
+const innerConeGeometry = new THREE.ConeGeometry(3.5/2 - 0.1, 3.5/2, 32); 
+const innerConeMaterial = new THREE.MeshBasicMaterial( {color: 0x000000} );
+const innerConeMesh = new THREE.Mesh(innerConeGeometry, innerConeMaterial ); 
+innerConeMesh.translateZ(2.59);
+innerConeMesh.rotateX(-1.55);
+scene.add(innerConeMesh);
 
 //Sizes
 const sizes = {
@@ -76,7 +91,7 @@ const sizes = {
 //Light
 const light = new THREE.PointLight(0xffffff, 3, 0)
 light.position.set(0,0,10)
-scene.add(light)
+//scene.add(light)
 
 //Camera
 const camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height, 0.1, 19)
@@ -110,6 +125,7 @@ const loop = () => {
   innerSphereMesh.rotateZ(-0.002)
   outerSphereGeometry.rotateY(-0.001)
   spiralGeometry.rotateZ(0.01)
+  //cone.rotateX(0.01);
 
   controls.update()
   renderer.render(scene, camera)
