@@ -56,12 +56,12 @@ const innerSphereMaterial = new THREE.ShaderMaterial({
 const innerSphereMesh = new THREE.Mesh(innerSphereGeometry, innerSphereMaterial)
 scene.add(innerSphereMesh)
 
-// Load an image file into a custom material
+
 var spiralMaterial = new THREE.MeshLambertMaterial({
   map: loader.load('assets/swirl.png'),
   transparent: true
 });
-var spiralGeometry = new THREE.PlaneGeometry(2, 2);
+var spiralGeometry = new THREE.PlaneGeometry(3.5, 3.5);
 var spiralMesh = new THREE.Mesh(spiralGeometry, spiralMaterial);
 // set the position of the image mesh in the x,y,z dimensions
 spiralMesh.position.set(0,0,3.5);
@@ -107,7 +107,7 @@ window.addEventListener('resize', () => {
 
 const loop = () => {
   //geometry animations
-  innerSphereGeometry.rotateY(0.002)
+  innerSphereMesh.rotateZ(-0.002)
   outerSphereGeometry.rotateY(-0.001)
   spiralGeometry.rotateZ(0.01)
 
