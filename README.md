@@ -6,8 +6,5 @@ I plan on using ThreeJS for its ease of use and expansive set of capabilities.
 
 Some examples of some of my artwork can be found on [my portfolio website](https://emtacolor.com).
 
-Rough Schedule:<br>
-Week 1 - Figure out dev environment and learn the basics of ThreeJS<br>
-Week 2 - Work on layout/general look of the scene<br>
-Week 3 - Animation<br>
-Week 4 - Polishing, maybe adding some interactive elements<br>
+**********************************************
+### **The presentation slides can be found [HERE.](https://docs.google.com/presentation/d/1B4XdY6ERHNIW70F9qzEAwG4wRN9MHr24AruDUavAkwY/edit?usp=sharing)**
