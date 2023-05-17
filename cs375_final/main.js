@@ -2,11 +2,22 @@ import * as THREE from 'three';
 import "./style.css"
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 
+var clock = new THREE.Clock()
+console.log(clock.startTime)
+
 // Texture Loader
 var loader = new THREE.TextureLoader();
 
 // Scene
 const scene = new THREE.Scene()
+
+// Uniforms 
+const uniformData = {
+  u_time: {
+    type: 'f', 
+    data: clock.getElapsedTime()
+  }
+}
 
 // Outer Sphere
 const outerSphereGeometry = new THREE.SphereGeometry(3.25,32,32)
@@ -30,6 +41,7 @@ scene.add(outerSphereMesh)
 //Inner Sphere
 const innerSphereGeometry = new THREE.SphereGeometry(3,64,64)
 const innerSphereMaterial = new THREE.ShaderMaterial({
+  uniforms: uniformData,
   vertexShader: `
   varying vec3 pos;
 
@@ -41,12 +53,13 @@ const innerSphereMaterial = new THREE.ShaderMaterial({
 
   }`, 
   fragmentShader: `
+  uniform float u_time;
   varying vec3 pos;
 
   void main(void)
   {
-    float offset = 10.0;
-    float total = floor(pos.x) + floor(pos.y) + offset;
+    float offset = u_time;
+    float total = floor(pos.x + offset) + floor(pos.y + offset);
     bool isEven = mod(total, 2.0) == 0.0;
     vec4 col1 = vec4(0.0, 0.0, 0.0, 1.0);
     vec4 col2 = vec4(1.0, 1.0, 1.0, 1.0);
@@ -65,6 +78,38 @@ var spiralGeometry = new THREE.CircleGeometry(1.75, 32);
 var spiralMesh = new THREE.Mesh(spiralGeometry, spiralMaterial);
 spiralMesh.position.set(0,0,3.51);
 scene.add(spiralMesh);
+
+// Blink 
+var blinkMaterial = new THREE.ShaderMaterial({
+  uniforms: uniformData,
+  vertexShader: `
+  varying vec3 pos;
+
+  void main() {
+    pos = position; 
+    gl_Position = projectionMatrix
+                  * modelViewMatrix
+                  * vec4(position.x, position.y, position.z, 1.0);
+
+  }`, 
+  fragmentShader: `
+  uniform float u_time;
+  varying vec3 pos;
+
+  void main(void)
+  {
+    float offset = 2.0;
+    bool isEven = pos.y > offset || pos.y < (offset * -1.0);
+    vec4 col1 = vec4(0.0, 0.0, 0.0, 1.0);
+    vec4 col2 = vec4(0.0, 0.0, 0.0, 0.0);
+    gl_FragColor = (isEven) ? col1 : col2;
+  }`,
+  transparent: true
+});
+var blinkGeometry = new THREE.CircleGeometry(1.75, 32);
+var blinkMesh = new THREE.Mesh(blinkGeometry, blinkMaterial);
+blinkMesh.position.set(0,0,3.52);
+scene.add(blinkMesh);
 
 //Outer Cone
 const outerConeGeometry = new THREE.ConeGeometry(3.5/2 - 0.05, 3.5/2, 32); 
@@ -119,14 +164,14 @@ window.addEventListener('resize', () => {
   renderer.setSize(sizes.width, sizes.height)
 })
 
+var previousFrameBlinked = false;
 
 const loop = () => {
-  //geometry animations
-  innerSphereMesh.rotateZ(-0.002)
+  //geometry rotations
   outerSphereGeometry.rotateY(-0.001)
   spiralGeometry.rotateZ(0.01)
-  //cone.rotateX(0.01);
 
+  uniformData.u_time.value = clock.getElapsedTime()
   controls.update()
   renderer.render(scene, camera)
   window.requestAnimationFrame(loop)
